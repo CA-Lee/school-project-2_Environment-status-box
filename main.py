@@ -51,7 +51,8 @@ db = sqlalchemy.create_engine(
 
 @app.route("/")
 def root():
-    
+    return "<center><h1>Hello GAE</h1></center>"
+'''
     with db.connect() as conn:
         # Execute the query and fetch all results
         recent_votes = conn.execute(
@@ -59,6 +60,8 @@ def root():
         ).fetchall()
 
     return str(recent_votes)
+'''
+
 
 
 @app.route("/callback", methods=['POST'])
@@ -78,7 +81,6 @@ def callback():
         abort(400)
 
     return 'OK'
-
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
