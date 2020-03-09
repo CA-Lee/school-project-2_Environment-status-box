@@ -1,2 +1,12 @@
 runtime: python38
 entrypoint: gunicorn -b :$PORT main:app
+
+# Remember - storing secrets in plaintext is potentially unsafe. Consider using
+# something like https://cloud.google.com/kms/ to help keep secrets secret.
+env_variables:
+  CLOUD_SQL_CONNECTION_NAME: school-project-2-269904:asia-east2:school-project-2-db
+  DB_USER: python
+  DB_PASS: Skills39
+  DB_NAME: main_db
+  LINE_CHANNEL_ACCESS_TOKEN: jVK0/sZFyq5wnJZilLEVuO3O/ZLfKYkkk5YU6b4pZ4pQz3KJVfJzHIaDxwR1v2UnNe2gWwkNCqnAvsl0g4PZY3Rk8l2aDLH0JJLpEL0N+d0pgzUVRbahxFPKRTCXfbvvH2s8lhNRqcQ/cRnG4gTKvgdB04t89/1O/w1cDnyilFU=
+  LINE_CHANNEL_SECRET: 0862e2c6cc5f765debc61cf13fe4da27

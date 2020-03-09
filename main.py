@@ -12,12 +12,19 @@ from linebot.models import (
 
 import re
 import time
+import os
+
+import sqlalchemy
 
 app = Flask(__name__)
-app.config.from_pyfile('config.cfg')
 
-line_bot_api = LineBotApi(app.config.get('YOUR_CHANNEL_ACCESS_TOKEN'))
-handler = WebhookHandler(app.config.get('YOUR_CHANNEL_SECRET'))
+line_bot_api = LineBotApi(os.environ.get('LINE_CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.environ.get('LINE_CHANNEL_SECRET'))
+
+db_user = os.environ.get("DB_USER")
+db_pass = os.environ.get("DB_PASS")
+db_name = os.environ.get("DB_NAME")
+cloud_sql_connection_name = os.environ.get("CLOUD_SQL_CONNECTION_NAME")
 
 def get_Server_Status():
     
@@ -26,9 +33,33 @@ def get_Server_Status():
 
     return res
 
+db = sqlalchemy.create_engine(
+    # Equivalent URL:
+    # mysql+pymysql://<db_user>:<db_pass>@/<db_name>?unix_socket=/cloudsql/<cloud_sql_instance_name>
+    sqlalchemy.engine.url.URL(
+        drivername="mysql+pymysql",
+        username=db_user,
+        password=db_pass,
+        database=db_name,
+        query={"unix_socket": "/cloudsql/{}".format(cloud_sql_connection_name)},
+    ),
+    pool_size=5,
+    max_overflow=2,
+    pool_timeout=30,
+    pool_recycle=1800,
+)
+
 @app.route("/")
 def root():
-    return "<center><h1>Hello GAE</h1></center>"
+    
+    with db.connect() as conn:
+        # Execute the query and fetch all results
+        recent_votes = conn.execute(
+            "SELECT * FROM main_db.app_log;"
+        ).fetchall()
+
+    return str(recent_votes)
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
