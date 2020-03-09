@@ -62,7 +62,14 @@ def root():
     return str(recent_votes)
 '''
 
+### Arduino ###
 
+@app.route("/arduino_entry")
+def arduino_entry():
+    with db.connect() as conn:
+        conn.execute("INSERT INTO `main_db`.`app_log` (`content`) VALUES ('/arduino_entry has been accessed at" + time.strftime("UTC%z %Y/%m/%d %T") + "');")
+    
+    return 'OK'
 
 @app.route("/callback", methods=['POST'])
 def callback():
