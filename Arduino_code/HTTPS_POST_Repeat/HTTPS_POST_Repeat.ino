@@ -92,7 +92,8 @@ void httpRequest() {
   // if there's a successful connection:
   if (client.connect(server, 80)) {
 
-    String post_str = "value1=" + String(analogRead(A1));
+    String post_str = "source=MKR1000";
+    post_str += "&brightness=" + String(analogRead(A1));
     
     Serial.println("connecting...");
     // send the HTTP PUT request:
@@ -102,6 +103,7 @@ void httpRequest() {
     client.println("Content-Type: application/x-www-form-urlencoded");
     client.println();
     client.println(post_str);
+    Serial.println("\n" + post_str);
 
     // note the time that the connection was made:
     lastConnectionTime = millis();
