@@ -1,7 +1,17 @@
 #include <SPI.h>
 #include <WiFi101.h>
 
-#include "arduino_secrets.h" 
+#include "arduino_secrets.h"
+
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+
+#define DHTPIN 3
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE); // Initialize DHT sensor
+
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
@@ -28,6 +38,8 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   */
+  Serial.println("DHT11 test!");
+  dht.begin();
   init_wifi();
 
 }
@@ -54,6 +66,15 @@ String gen_post_str(){
   String post_str = "source=MKR1000";
   
   post_str += "&brightness=" + String(analogRead(A1));
+  
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Failed to read from DHT sensor!");
+  }else{
+    post_str += "&t=" + String(t,1);
+    post_str += "&h=" + String(h,1);
+  }
 
   return post_str;
 
