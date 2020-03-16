@@ -80,7 +80,7 @@ def sensor_data():
     with db.connect() as conn:
         # Execute the query and fetch all results
         data = conn.execute(
-            "SELECT * FROM main_db.sensor_data ORDER BY timestamp desc limit 100;"
+            "SELECT * FROM main_db.sensor_data ORDER BY timestamp desc limit 1;"
         )
         raw_timestamps = conn.execute("SELECT timestamp FROM main_db.sensor_data where source='MKR1000' ORDER BY timestamp desc limit 500;").fetchall()
         timestamps = [row[0].strftime("%X") for row in raw_timestamps]
