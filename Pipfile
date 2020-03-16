@@ -11,6 +11,7 @@ sqlalchemy = "*"
 line-bot-sdk = "*"
 gunicorn = "*"
 pymysql = "*"
+datetime = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Sensor_Data</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Sensor_Data</h1>
+    <script>//var t = setTimeout(function () { location.reload(); }, 5000);</script>
+    <table>
+        <tr>
+            {% for key in keys %}
+            <td>
+                {{key}}
+            </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for val in vals %}
+            <td>
+                {{val}}
+            </td>
+            {% endfor %}
+        </tr>
+    </table>
+    <canvas id="myChart"></canvas>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: {{timestamps|safe}},
+                datasets: [{
+                    label: 'Brightness',
+                    backgroundColor: 'transparent',
+                    borderColor: 'rgb(255,200,0)',
+                    data: {{brightnesses}}
+                }]
+            },
+
+            // Configuration options go here
+            options: {}
+        });
+    </script>
+</body>
+
+</html>
