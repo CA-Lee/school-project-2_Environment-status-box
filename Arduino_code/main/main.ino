@@ -1,22 +1,3 @@
-/*
-  Repeating WiFi Web Client
-
- This sketch connects to a a web server and makes a request
- using an Arduino WiFi shield.
-
- Circuit:
- * WiFi shield attached to pins SPI pins and pin 7
-
- created 23 April 2012
- modified 31 May 2012
- by Tom Igoe
- modified 13 Jan 2014
- by Federico Vanzati
-
- http://arduino.cc/en/Tutorial/WiFiWebClientRepeating
- This code is in the public domain.
- */
-
 #include <SPI.h>
 #include <WiFi101.h>
 
@@ -29,7 +10,7 @@ int keyIndex = 0;            // your network key Index number (needed only for W
 int status = WL_IDLE_STATUS;
 
 // Initialize the WiFi client library
-WiFiClient client;
+WiFiSSLClient client;
 
 // server address:
 char server[] = "school-project-2-269904.appspot.com";
@@ -90,7 +71,7 @@ void httpRequest() {
   client.stop();
 
   // if there's a successful connection:
-  if (client.connect(server, 80)) {
+  if (client.connect(server, 443)) {
 
     String post_str = "source=MKR1000";
     post_str += "&brightness=" + String(analogRead(A1));
