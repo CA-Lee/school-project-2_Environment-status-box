@@ -54,7 +54,7 @@ def arduino_entry():
     with db.connect() as conn:
         conn.execute("INSERT INTO `main_db`.`app_log` (`content`) VALUES ('/arduino_entry has been accessed at " + time.strftime("UTC%z %Y/%m/%d %T") + "');")
         
-        keylist = ["source","brightness"]
+        keylist = ["source","brightness","t","h"]
         keys = ""
         values = ""
         for k in keylist:
