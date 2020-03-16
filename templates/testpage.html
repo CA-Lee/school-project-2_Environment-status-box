@@ -1,0 +1,6 @@
+<form action="/arduino_entry" method="POST">
+    {% for key in keys %}
+    {{key}}:&nbsp;<input type="text" name="{{key}}">&nbsp;|&nbsp;
+    {% endfor %}
+    <input type="submit">
+</form>

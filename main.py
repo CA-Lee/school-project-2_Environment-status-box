@@ -43,6 +43,8 @@ db = sqlalchemy.create_engine(
     pool_recycle=1800,
 )
 
+keylist = ["source","brightness","t","h"]
+
 @app.route("/")
 def root():
     return "<center><h1>Hello GAE</h1></center>"
@@ -54,7 +56,6 @@ def arduino_entry():
     with db.connect() as conn:
         conn.execute("INSERT INTO `main_db`.`app_log` (`content`) VALUES ('/arduino_entry has been accessed at " + time.strftime("UTC%z %Y/%m/%d %T") + "');")
         
-        keylist = ["source","brightness","t","h"]
         keys = ""
         values = ""
         for k in keylist:
@@ -69,8 +70,10 @@ def arduino_entry():
 
 @app.route("/arduino_test")
 def arduino_test():
-    return app.send_static_file('testpage.html')
-
+    return render_template(
+        "testpage.html", 
+        keys=keylist
+        )
 @app.route("/sensor_data")
 def sensor_data():
     
