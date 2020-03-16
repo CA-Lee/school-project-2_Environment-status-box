@@ -20,31 +20,16 @@ unsigned long lastConnectionTime = 0;            // last time you connected to t
 const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
 
 void setup() {
+
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
+  /*
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+  */
+  init_wifi();
 
-  // check for the presence of the shield:
-  if (WiFi.status() == WL_NO_SHIELD) {
-    Serial.println("WiFi shield not present");
-    // don't continue:
-    while (true);
-  }
-
-  // attempt to connect to WiFi network:
-  while ( status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
-    Serial.println(ssid);
-    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
-    status = WiFi.begin(ssid, pass);
-
-    // wait 10 seconds for connection:
-    delay(10000);
-  }
-  // you're connected now, so print out the status:
-  printWiFiStatus();
 }
 
 void loop() {
@@ -59,13 +44,23 @@ void loop() {
   // if ten seconds have passed since your last connection,
   // then connect again and send data:
   if (millis() - lastConnectionTime > postingInterval) {
-    httpRequest();
+    httpsRequest(gen_post_str());
   }
 
 }
 
+String gen_post_str(){
+  
+  String post_str = "source=MKR1000";
+  
+  post_str += "&brightness=" + String(analogRead(A1));
+
+  return post_str;
+
+}
+
 // this method makes a HTTP connection to the server:
-void httpRequest() {
+void httpsRequest(String post_str) {
   // close any connection before send a new request.
   // This will free the socket on the WiFi shield
   client.stop();
@@ -73,9 +68,6 @@ void httpRequest() {
   // if there's a successful connection:
   if (client.connect(server, 443)) {
 
-    String post_str = "source=MKR1000";
-    post_str += "&brightness=" + String(analogRead(A1));
-    
     Serial.println("connecting...");
     // send the HTTP PUT request:
     client.println("POST /arduino_entry HTTP/1.1");
@@ -95,7 +87,6 @@ void httpRequest() {
   }
 }
 
-
 void printWiFiStatus() {
   // print the SSID of the network you're attached to:
   Serial.print("SSID: ");
@@ -111,4 +102,45 @@ void printWiFiStatus() {
   Serial.print("signal strength (RSSI):");
   Serial.print(rssi);
   Serial.println(" dBm");
+}
+
+void init_wifi(){
+  // check for the presence of the shield:
+  if (WiFi.status() == WL_NO_SHIELD) {
+    Serial.println("WiFi shield not present");
+    // don't continue:
+    while (true);
+  }
+
+  // attempt to connect to WiFi network:
+  while ( status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
+    status = WiFi.begin(ssid, pass);
+
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+    if(status == WL_CONNECTED)break;
+    delay(1000);
+
+  }
+  // you're connected now, so print out the status:
+  printWiFiStatus();
 }
