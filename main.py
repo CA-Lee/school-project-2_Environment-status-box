@@ -82,18 +82,33 @@ def sensor_data():
         data = conn.execute(
             "SELECT * FROM main_db.sensor_data ORDER BY timestamp desc limit 1;"
         )
-        raw_timestamps = conn.execute("SELECT timestamp FROM main_db.sensor_data where source='MKR1000' ORDER BY timestamp desc limit 500;").fetchall()
+        # 10s * 6 * 60 * 24 = 10 * 8640 //24hr, full
+        # 10 * 6 * 5 * 12 * 24 = 300 * 288 //24hr, 1rec/5min
+
+        # use desc in order to get latest records,
+        # use reverse() to let it sort from old to new
+
+
+        raw_timestamps = conn.execute("SELECT timestamp FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
         timestamps = [row[0].strftime("%X") for row in raw_timestamps]
         timestamps.reverse()
-        raw_brightnesses = conn.execute("SELECT brightness FROM main_db.sensor_data where source='MKR1000' ORDER BY timestamp desc limit 500;").fetchall()
+        raw_brightnesses = conn.execute("SELECT brightness FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
         brightnesses = [row[0] for row in raw_brightnesses]
         brightnesses.reverse()
+        raw_t = conn.execute("SELECT t FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        t = [row[0] for row in raw_t]
+        t.reverse()
+        raw_h = conn.execute("SELECT h FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        h = [row[0] for row in raw_h]
+        h.reverse()
         return render_template(
             "sensor_data.html", 
             keys=data.keys(),
             vals=data.fetchone(),
             timestamps=timestamps,
-            brightnesses=brightnesses
+            brightnesses=brightnesses,
+            t=t,
+            h=h
         )
 
 ### Line Bot ###
@@ -111,10 +126,12 @@ def get_newest_data():
     with db.connect() as conn:
         res = "The newest data:\n"
         sql_r = conn.execute("SELECT * FROM main_db.sensor_data ORDER BY timestamp desc limit 1;")
-        col = (sql_r.keys(),sql_r.fetchone())
-        res += str(col[0][0]) + " : " + str(col[1][0] + datetime.timedelta(hours=8)) + "\n"
-        for i in range(1,len(col[0])):
-            res += str(col[0][i]) + " : " + str(col[1][i]) + "\n"
+        col = zip(sql_r.keys(),sql_r.fetchone())
+        for arr in col:
+            if arr[0] == "timestamp":
+                res += str(arr[0]) + " : " + str(arr[1] + datetime.timedelta(hours=8)) + "\n"
+                continue
+            res += str(arr[0]) + " : " + str(arr[1]) + "\n"
     return res
 
 @app.route("/callback", methods=['POST'])
