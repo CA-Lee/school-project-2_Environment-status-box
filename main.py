@@ -43,7 +43,7 @@ db = sqlalchemy.create_engine(
     pool_recycle=1800,
 )
 
-keylist = ["source","brightness","t","h"]
+keylist = ["source","brightness","t","h","co2"]
 
 @app.route("/")
 def root():
@@ -59,6 +59,7 @@ def arduino_entry():
         keys = ""
         values = ""
         for k in keylist:
+            if str(request.values.get(k)) == "None": continue
             if keys != "":
                 keys += ", "
                 values += ", "
@@ -89,16 +90,16 @@ def sensor_data():
         # use reverse() to let it sort from old to new
 
 
-        raw_timestamps = conn.execute("SELECT timestamp FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        raw_timestamps = conn.execute("SELECT timestamp FROM main_db.sensor_data where source='MKR1000' and id %% 3 = 0 ORDER BY timestamp desc limit 2880;").fetchall()
         timestamps = [row[0].strftime("%X") for row in raw_timestamps]
         timestamps.reverse()
-        raw_brightnesses = conn.execute("SELECT brightness FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        raw_brightnesses = conn.execute("SELECT brightness FROM main_db.sensor_data where source='MKR1000' and id %% 3 = 0 ORDER BY timestamp desc limit 2880;").fetchall()
         brightnesses = [row[0] for row in raw_brightnesses]
         brightnesses.reverse()
-        raw_t = conn.execute("SELECT t FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        raw_t = conn.execute("SELECT t FROM main_db.sensor_data where source='MKR1000' and id %% 3 = 0 ORDER BY timestamp desc limit 2880;").fetchall()
         t = [row[0] for row in raw_t]
         t.reverse()
-        raw_h = conn.execute("SELECT h FROM main_db.sensor_data where source='MKR1000' and id %% 30 = 0 ORDER BY timestamp desc limit 288;").fetchall()
+        raw_h = conn.execute("SELECT h FROM main_db.sensor_data where source='MKR1000' and id %% 3 = 0 ORDER BY timestamp desc limit 2880;").fetchall()
         h = [row[0] for row in raw_h]
         h.reverse()
         return render_template(
